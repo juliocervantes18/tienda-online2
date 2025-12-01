@@ -1,0 +1,22 @@
+
+stages:
+  - build
+  - test
+
+build_job:
+  stage: build
+  image: gradle:7.6-jdk11
+  script:
+    - gradle build
+  only:
+    - develop
+    - feature/*
+
+test_job:
+  stage: test
+  image: gradle:7.6-jdk11
+  script:
+    - gradle test
+  only:
+    - develop
+    - feature/*
