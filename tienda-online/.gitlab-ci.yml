@@ -1,22 +1,31 @@
+image: eclipse-temurin:8-jdk
 
 stages:
   - build
-  - test
+  - package
 
-build_job:
+before_script:
+  - apt-get update
+  - apt-get install -y ant
+
+build:
   stage: build
-  image: gradle:7.6-jdk11
   script:
-    - gradle build
-  only:
-    - develop
-    - feature/*
+    - echo "Limpiando proyecto..."
+    - ant clean
+    - echo "Compilando proyecto..."
+    - ant compile
+  artifacts:
+    paths:
+      - build/
+    expire_in: 1 week
 
-test_job:
-  stage: test
-  image: gradle:7.6-jdk11
+package:
+  stage: package
   script:
-    - gradle test
-  only:
-    - develop
-    - feature/*
+    - echo "Generando artefacto (JAR o WAR)..."
+    - ant jar || ant war
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 week
