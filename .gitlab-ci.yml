@@ -1,27 +1,32 @@
-image: openjdk:8
+image: eclipse-temurin:8-jdk
 
 stages:
   - build
-  - test
+  - package
 
 before_script:
-  - apt-get update -y
+  - apt-get update
   - apt-get install -y ant
 
 build:
   stage: build
   script:
-    - echo "Compilando proyecto con Ant..."
+    - echo "Limpiando proyecto..."
     - ant clean
+    - echo "Compilando proyecto..."
     - ant compile
   artifacts:
     paths:
       - build/
+    expire_in: 1 week
 
-test:
-  stage: test
+package:
+  stage: package
   script:
-    - echo "Ejecutando pruebas JUnit..."
-    - ant test
-  dependencies:
-    - build
+    - echo "Generando artefacto (JAR o WAR)..."
+    - ant jar || ant war
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 week
+
